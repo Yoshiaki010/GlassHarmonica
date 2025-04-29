@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel ="stylesheet" href = "style.css" type = "text/css"></style>
+    <title>多摩大学 栁澤孝彰 成果物「失われた楽器のシステム開発」</title>
+</head>
+<body>
+    <header>
+        <h1>「失われた楽器」を再現</h1>
+        <p class="subtitle">失われた楽器のデジタル復元と新しい体験の創出</p>
+    </header>
+    
+    <div class="container">
+        <section class="section">
+            <h2>1. プロジェクト概要</h2>
+            <p>歴史的に失われた楽器「グラスハーモニカ（アルモニカ）」を体験できるプロジェクトです。</p>
+            <p>VR技術を活用し、楽器の演奏体験をデジタル空間で再現しています。このプロジェクトでは、技術とアートの融合による新たな価値創造を目指しています。</p>
+            
+            <div class="video-container">
+                <iframe width="560" height="315" src="https://www.youtube.com/watch?v=C7NNicHKL5w" title="多摩大学「失われた楽器」プロジェクト" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            
+            <a href="https://www.youtube.com/watch?v=C7NNicHKL5w" class="btn" target="_blank">プロジェクト紹介動画を見る</a>
+        </section>
+        
+        <section class="section">
+            <h2>2. グラスハーモニカとは？</h2>
+            <div class="system-explanation">
+                <div class="system-image">
+                    <img src="/api/placeholder/400/300" alt="グラスハーモニカのイメージ" />
+                </div>
+                <div class="system-text">
+                    <p>グラスハーモニカは18世紀ヨーロッパで人気を博したガラス製の楽器です。ベンジャミン・フランクリンによって1761年に発明され、○○や○○など多くの著名な作曲家がこの楽器のための作品を残しています。</p>
+                    <p>回転するガラスの円盤に濡れた指で触れることで、透明感のある幻想的な音色を奏でます。その美しい音色は「天使の声」とも称されました。</p>
+                    <p>現在、日本国内にはわずか3台しか現存していません。実物に触れる機会はほとんどなく、その演奏技術や音色の継承が課題となっています。</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>3. プロジェクトの取り組み</h2>
+            <p>本プロジェクトでは、学生主体で楽器の構造や音色を徹底調査し、3Dモデリングやサウンドサンプリングを駆使して、VR空間での演奏体験システムを開発しました。</p>
+            
+            <div class="highlight">
+                <p>世界的なバーチャルイベント「Laval Virtual」などで高い評価を獲得しています。</p>
+            </div>
+            
+            <h3>担当分野</h3>
+            <ol>
+                <li>グラスハーモニカの音やモデルの再現</li>
+                <li>VR環境での演奏体験のシステム開発</li>
+                <li>グラスハーモニカの形をしたハードウェアの作成</li>
+            </ol>
+            <p>わたしは3を担当しました。</p>
+        </section>
+        
+        <section class="section">
+            <h2>3. 演奏体験のシステム開発</h2>
+            <p>私たちのプロジェクトで特に注力したのは、初心者でもグラスハーモニカの演奏を体験できる「演奏ガイドシステム」の開発です。このシステムはC#で開発され、VR空間内で「ここに触れて、演奏をしてください」と視覚的にガイドします。</p>
+            
+            <div class="system-explanation">
+                <div class="system-text">
+                    <h3>システムの特徴</h3>
+                    <ul>
+                        <li>触れるべき場所を視覚的にハイライト表示</li>
+                        <li>正しい触れ方をリアルタイムにフィードバック</li>
+                        <li>熟練度に応じたガイダンスレベルの調整</li>
+                        <li>演奏の記録と分析機能</li>
+                    </ul>
+                    
+                    <h3>技術的実装</h3>
+                    <p>Unity上でC#を使用して開発されたこのシステムは、以下の要素で構成されています：</p>
+                </div>
+                <div class="system-image">
+                    <img src="/api/placeholder/400/300" alt="演奏ガイドシステムのイメージ" />
+                </div>
+            </div>
+            
+            <div class="code-block">
+// C#によるグラスハーモニカ演奏ガイドの一部実装例
+using UnityEngine;
+using System.Collections;
+
+public class GlassHarmonicaGuide : MonoBehaviour
+{
+    // 各グラスディスクの位置情報
+    public Transform[] glassDisks;
+    
+    // ハイライト表示用のエフェクト
+    public GameObject highlightEffect;
+    
+    // 現在の曲の演奏ガイドデータ
+    private NoteSequence currentSong;
+    
+    // 次に演奏すべき音符のインデックス
+    private int nextNoteIndex = 0;
+    
+    void Start()
+    {
+        // 曲のデータをロード
+        LoadSongData();
+        
+        // 最初の音符をハイライト
+        HighlightNextNote();
+    }
+    
+    // プレイヤーのタッチ入力を検出
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            
+            if (Physics.Raycast(ray, out hit))
+            {
+                // 正しいディスクに触れたかチェック
+                CheckTouchAccuracy(hit.transform);
+            }
+        }
+    }
+    
+    // タッチの正確さをチェックし、フィードバックを提供
+    void CheckTouchAccuracy(Transform touchedObject)
+    {
+        // 実装省略
+    }
+    
+    // 次の音符をハイライト表示
+    void HighlightNextNote()
+    {
+        // 実装省略
+    }
+}
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>3-2.</h2>
+            <p>C#で開発した演奏ガイドシステムをより多くの人に体験してもらうため、HTML/CSS/JavaScriptを使用したWeb版インターフェースも開発しました。</p>
+            
+            <div class="code-block">
+// グラスハーモニカ演奏ガイドのJavaScript実装例
+document.addEventListener('DOMContentLoaded', function() {
+    const glassDisks = document.querySelectorAll('.glass-disk');
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let currentNote = 0;
+    const songSequence = [2, 5, 3, 7, 2, 5, 1]; // 簡易的な演奏シーケンス
+    
+    // 初期ハイライト表示
+    highlightNextDisk();
+    
+    // 各ディスクにイベントリスナーを設定
+    glassDisks.forEach((disk, index) => {
+        disk.addEventListener('click', () => {
+            // クリックされたディスクが正しければ音を鳴らす
+            if (index === songSequence[currentNote]) {
+                playNote(index);
+                currentNote++;
+                
+                // 次の音符をハイライト
+                if (currentNote < songSequence.length) {
+                    highlightNextDisk();
+                } else {
+                    // 演奏完了
+                    showCompletionMessage();
+                }
+            } else {
+                // 間違った場合のフィードバック
+                showErrorFeedback();
+            }
+        });
+    });
+    
+    function highlightNextDisk() {
+        // 以前のハイライトをクリア
+        glassDisks.forEach(disk => disk.classList.remove('highlight'));
+        
+        // 次のディスクをハイライト
+        const nextDisk = glassDisks[songSequence[currentNote]];
+        nextDisk.classList.add('highlight');
+    }
+    
+    function playNote(diskIndex) {
+        // Web Audio APIで音を生成
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        
+        // 各ディスクの周波数を設定
+        const frequencies = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88];
+        oscillator.frequency.value = frequencies[diskIndex];
+        
+        // 音色の設定
+        oscillator.type = 'sine';
+        gain.gain.value = 0.5;
+        
+        // 接続と再生
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        
+        oscillator.start();
+        
+        // フェードアウト
+        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 2);
+        setTimeout(() => oscillator.stop(), 2000);
+    }
+});
+            </div>
+            
+            <h3>HTML/CSSによる視覚的表現</h3>
+            <p>Webインターフェースでは、グラスハーモニカの回転するガラスディスクを視覚的に表現し、ユーザーがクリックやタッチで演奏できるようにしています。</p>
+        </section>
+        
+        <section class="section">
+            <h2>6. 成果と評価</h2>
+            <p>2024年、「Laval Virtual」世界大会でベスト11に選出されるなど、高い評価を得ています。実物に触れられない希少楽器の音や演奏体験を多くの人に提供することに成功しました。</p>
+            
+            <div class="highlight">
+                <p>文化遺産のデジタル継承や音楽教育の新たな可能性を提示しています。</p>
+            </div>
+        </section>
+        
+        <section class="section">
+            <h2>7. 今後の展望</h2>
+            <p>私たちのプロジェクトは、さらなる発展を目指しています：</p>
+            
+            <div class="highlight">
+                <p>他の「失われた楽器」への応用や、教育・博物館分野への展開を計画中です。</p>
+            </div>
+            
+            <p>テクノロジーとアートの融合による新しい価値創造を継続的に追求していきます。また、オープンソースとしてのプロジェクト公開も検討中で、より多くの人々が歴史的楽器との出会いを体験できる機会を創出していきます。</p>
+        </section>
+        
+        <section class="section">
+            <h2>8. まとめ</h2>
+            <p>多摩大学の「失われた楽器」プロジェクトは、歴史的文化財のデジタル復元と体験を通じて、音楽とテクノロジーの未来を切り拓く取り組みです。</p>
+            <p>演奏ガイドシステムの開発により、専門知識がなくても誰でも失われつつある楽器文化を体験できる可能性を広げています。これからも技術革新と文化保存の両面から、新たな価値の創造に挑戦していきます。</p>
+        </section>
+    </div>
+    
+    <footer>
+        <p>© 2025 多摩大学「失われた楽器」プロジェクト</p>
+        <p>お問い合わせ: project@tama.ac.jp</p>
+    </footer>
+</body>
+</html>
