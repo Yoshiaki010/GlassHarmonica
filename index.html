@@ -17,20 +17,13 @@
             <h2>1. プロジェクト概要</h2>
             <p>歴史的に失われた楽器「グラスハーモニカ（アルモニカ）」を体験できるプロジェクトです。</p>
             <p>VR技術を活用し、楽器の演奏体験をデジタル空間で再現しています。このプロジェクトでは、技術とアートの融合による新たな価値創造を目指しています。</p>
-            
-            <div class="video-container">
-                <iframe width="560" height="315" src="https://www.youtube.com/watch?v=C7NNicHKL5w" title="多摩大学「失われた楽器」プロジェクト" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-            
             <a href="https://www.youtube.com/watch?v=C7NNicHKL5w" class="btn" target="_blank">プロジェクト紹介動画を見る</a>
         </section>
         
         <section class="section">
             <h2>2. グラスハーモニカとは？</h2>
             <div class="system-explanation">
-                <div class="system-image">
-                    <img src="/api/placeholder/400/300" alt="グラスハーモニカのイメージ" />
-                </div>
+                <img src="./GlassHarmonicaImage.png"/>
                 <div class="system-text">
                     <p>グラスハーモニカは18世紀ヨーロッパで人気を博したガラス製の楽器です。ベンジャミン・フランクリンによって1761年に発明され、○○や○○など多くの著名な作曲家がこの楽器のための作品を残しています。</p>
                     <p>回転するガラスの円盤に濡れた指で触れることで、透明感のある幻想的な音色を奏でます。その美しい音色は「天使の声」とも称されました。</p>
@@ -47,17 +40,64 @@
                 <p>世界的なバーチャルイベント「Laval Virtual」などで高い評価を獲得しています。</p>
             </div>
             
-            <h3>担当分野</h3>
-            <ol>
-                <li>グラスハーモニカの音やモデルの再現</li>
-                <li>VR環境での演奏体験のシステム開発</li>
-                <li>グラスハーモニカの形をしたハードウェアの作成</li>
-            </ol>
-            <p>わたしは3を担当しました。</p>
+            <h3>システム図</h3>
+                <p>本プロジェクトは、次のようなシステムです。私は、赤枠内の「Native App」のシステムを開発しました。</p>
+                <img src="./SystemImage.png">
+
+            <h3>「Native App」のクラス図</h3>
+                <p>「Native App」は、次のようなクラスからできています。</p>
+                <img src = "./ClassImage.png">
+                <p>私は、赤枠内の6つのクラス(GameLoop)を開発しました。</p>
+                <ol>
+                    <li>GameLoop</li>
+                    <p>このクラスは、「待機、開始、演奏、結果」、この一連の体験を繰り返します。</p>
+                    <div class = "code-block">
+public class GameLoop : MonoBehaviour
+{
+    Update()
+    {
+
+    }
+}                        
+                    </div>
+
+                    <li>GakufuController</li>
+                    <p>
+                    このクラスは、主に楽譜の進行を管理します。また、次のつの機能を持ちます。
+                    1.楽譜ファイルを読み込み機能
+                    </p>
+                    <div class = "code-block">
+
+                    </div>
+    
+                    <li>Judgement</li>
+                    <p>このクラスは、GakufuControllerから送られた、弾いたタイミングを評価します。</p>
+                    <div class = "code-block">
+
+                    </div>
+    
+                    <li>TouchJudge</li>
+                    <p>このクラスは、触れた鍵盤をGakufuContorllerに送ります。</p>
+                    <div class = "code-block">
+
+                    </div>
+    
+                    <li>Guider</li>
+                    <p>このクラスは、GakufuContorllerから送られた1音を表示します。</p>
+                    <div class = "code-block">
+
+                    </div>
+    
+                    <li>ChangeController</li>
+                    <p>このクラスは、GakufuContorllerから送られた鍵盤を光らせます。</p>
+                    <div class = "code-block">
+
+                    </div>
+                </ol>
         </section>
         
         <section class="section">
-            <h2>3. 演奏体験のシステム開発</h2>
+            <h2>4. 演奏体験のシステム開発</h2>
             <p>私たちのプロジェクトで特に注力したのは、初心者でもグラスハーモニカの演奏を体験できる「演奏ガイドシステム」の開発です。このシステムはC#で開発され、VR空間内で「ここに触れて、演奏をしてください」と視覚的にガイドします。</p>
             
             <div class="system-explanation">
@@ -71,10 +111,7 @@
                     </ul>
                     
                     <h3>技術的実装</h3>
-                    <p>Unity上でC#を使用して開発されたこのシステムは、以下の要素で構成されています：</p>
-                </div>
-                <div class="system-image">
-                    <img src="/api/placeholder/400/300" alt="演奏ガイドシステムのイメージ" />
+                    <p>Unity上でC#を使用して開発されたこのシステムは、以下の要素で構成されています。</p>
                 </div>
             </div>
             
@@ -85,136 +122,12 @@ using System.Collections;
 
 public class GlassHarmonicaGuide : MonoBehaviour
 {
-    // 各グラスディスクの位置情報
-    public Transform[] glassDisks;
-    
-    // ハイライト表示用のエフェクト
-    public GameObject highlightEffect;
-    
-    // 現在の曲の演奏ガイドデータ
-    private NoteSequence currentSong;
-    
-    // 次に演奏すべき音符のインデックス
-    private int nextNoteIndex = 0;
-    
-    void Start()
-    {
-        // 曲のデータをロード
-        LoadSongData();
-        
-        // 最初の音符をハイライト
-        HighlightNextNote();
-    }
-    
-    // プレイヤーのタッチ入力を検出
-    void Update()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            
-            if (Physics.Raycast(ray, out hit))
-            {
-                // 正しいディスクに触れたかチェック
-                CheckTouchAccuracy(hit.transform);
-            }
-        }
-    }
-    
-    // タッチの正確さをチェックし、フィードバックを提供
-    void CheckTouchAccuracy(Transform touchedObject)
-    {
-        // 実装省略
-    }
-    
-    // 次の音符をハイライト表示
-    void HighlightNextNote()
-    {
-        // 実装省略
-    }
 }
             </div>
         </section>
         
         <section class="section">
-            <h2>3-2.</h2>
-            <p>C#で開発した演奏ガイドシステムをより多くの人に体験してもらうため、HTML/CSS/JavaScriptを使用したWeb版インターフェースも開発しました。</p>
-            
-            <div class="code-block">
-// グラスハーモニカ演奏ガイドのJavaScript実装例
-document.addEventListener('DOMContentLoaded', function() {
-    const glassDisks = document.querySelectorAll('.glass-disk');
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    let currentNote = 0;
-    const songSequence = [2, 5, 3, 7, 2, 5, 1]; // 簡易的な演奏シーケンス
-    
-    // 初期ハイライト表示
-    highlightNextDisk();
-    
-    // 各ディスクにイベントリスナーを設定
-    glassDisks.forEach((disk, index) => {
-        disk.addEventListener('click', () => {
-            // クリックされたディスクが正しければ音を鳴らす
-            if (index === songSequence[currentNote]) {
-                playNote(index);
-                currentNote++;
-                
-                // 次の音符をハイライト
-                if (currentNote < songSequence.length) {
-                    highlightNextDisk();
-                } else {
-                    // 演奏完了
-                    showCompletionMessage();
-                }
-            } else {
-                // 間違った場合のフィードバック
-                showErrorFeedback();
-            }
-        });
-    });
-    
-    function highlightNextDisk() {
-        // 以前のハイライトをクリア
-        glassDisks.forEach(disk => disk.classList.remove('highlight'));
-        
-        // 次のディスクをハイライト
-        const nextDisk = glassDisks[songSequence[currentNote]];
-        nextDisk.classList.add('highlight');
-    }
-    
-    function playNote(diskIndex) {
-        // Web Audio APIで音を生成
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-        
-        // 各ディスクの周波数を設定
-        const frequencies = [261.63, 293.66, 329.63, 349.23, 392.00, 440.00, 493.88];
-        oscillator.frequency.value = frequencies[diskIndex];
-        
-        // 音色の設定
-        oscillator.type = 'sine';
-        gain.gain.value = 0.5;
-        
-        // 接続と再生
-        oscillator.connect(gain);
-        gain.connect(audioContext.destination);
-        
-        oscillator.start();
-        
-        // フェードアウト
-        gain.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 2);
-        setTimeout(() => oscillator.stop(), 2000);
-    }
-});
-            </div>
-            
-            <h3>HTML/CSSによる視覚的表現</h3>
-            <p>Webインターフェースでは、グラスハーモニカの回転するガラスディスクを視覚的に表現し、ユーザーがクリックやタッチで演奏できるようにしています。</p>
-        </section>
-        
-        <section class="section">
-            <h2>6. 成果と評価</h2>
+            <h2>5. 成果と評価</h2>
             <p>2024年、「Laval Virtual」世界大会でベスト11に選出されるなど、高い評価を得ています。実物に触れられない希少楽器の音や演奏体験を多くの人に提供することに成功しました。</p>
             
             <div class="highlight">
@@ -223,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </section>
         
         <section class="section">
-            <h2>7. 今後の展望</h2>
+            <h2>6. 今後の展望</h2>
             <p>私たちのプロジェクトは、さらなる発展を目指しています：</p>
             
             <div class="highlight">
@@ -234,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function() {
         </section>
         
         <section class="section">
-            <h2>8. まとめ</h2>
+            <h2>7. まとめ</h2>
             <p>多摩大学の「失われた楽器」プロジェクトは、歴史的文化財のデジタル復元と体験を通じて、音楽とテクノロジーの未来を切り拓く取り組みです。</p>
             <p>演奏ガイドシステムの開発により、専門知識がなくても誰でも失われつつある楽器文化を体験できる可能性を広げています。これからも技術革新と文化保存の両面から、新たな価値の創造に挑戦していきます。</p>
         </section>
