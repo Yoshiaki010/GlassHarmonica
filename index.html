@@ -15,9 +15,10 @@
     <div class="container">
         <section class="section">
             <h2>1. プロジェクト概要</h2>
-            <p>歴史的に失われた楽器「グラスハーモニカ（アルモニカ）」を体験できるプロジェクトです。</p>
-            <p>VR技術を活用し、楽器の演奏体験をデジタル空間で再現しています。このプロジェクトでは、技術とアートの融合による新たな価値創造を目指しています。</p>
-            <a href="https://www.youtube.com/watch?v=C7NNicHKL5w" class="btn" target="_blank">プロジェクト紹介動画を見る</a>
+            <p>このプロジェクトは、歴史的に失われた楽器「グラスハーモニカ（アルモニカ）」の演奏を体験できるプロジェクトです。</p>
+            <p>VR技術を活用し、楽器の演奏をデジタル空間で再現しています。</p>
+            <img src = "./ProjectImage.png">            
+            <p><a href = "https://youtu.be/C7NNicHKL5w?si=Al4dvAr5HyDZ7Q_8">YouTubeでみる</a>(https://youtu.be/C7NNicHKL5w?si=Al4dvAr5HyDZ7Q_8)</p>
         </section>
         
         <section class="section">
@@ -25,7 +26,7 @@
             <div class="system-explanation">
                 <img src="./GlassHarmonicaImage.png"/>
                 <div class="system-text">
-                    <p>グラスハーモニカは18世紀ヨーロッパで人気を博したガラス製の楽器です。ベンジャミン・フランクリンによって1761年に発明され、○○や○○など多くの著名な作曲家がこの楽器のための作品を残しています。</p>
+                    <p>グラスハーモニカは18世紀ヨーロッパで人気を博したガラス製の楽器です。著名な作曲家がこの楽器のための作品を残しています。</p>
                     <p>回転するガラスの円盤に濡れた指で触れることで、透明感のある幻想的な音色を奏でます。その美しい音色は「天使の声」とも称されました。</p>
                     <p>現在、日本国内にはわずか3台しか現存していません。実物に触れる機会はほとんどなく、その演奏技術や音色の継承が課題となっています。</p>
                 </div>
@@ -35,52 +36,31 @@
         <section class="section">
             <h2>3. プロジェクトの取り組み</h2>
             <p>本プロジェクトでは、学生主体で楽器の構造や音色を徹底調査し、3Dモデリングやサウンドサンプリングを駆使して、VR空間での演奏体験システムを開発しました。</p>
-            
-            <div class="highlight">
-                <p>世界的なバーチャルイベント「Laval Virtual」などで高い評価を獲得しています。</p>
-            </div>
-            
+            <p>３人チームで、音・モデリング開発役、アプリ開発役（私）、デバイス開発役の３役に分かれて開発を行いました。</p>
+            <p>システムの開発期間は、２か月程で行いました。</p>
+
             <h3>システム図</h3>
-                <p>本プロジェクトは、次のようなシステムです。私は、赤枠内の「Native App」のシステムを開発しました。</p>
+                <p>本プロジェクトは、次のようなシステムです。私は、赤枠内の「Native App」の開発を担当しました。</p>
                 <img src="./SystemImage.png">
 
-            <h3>「Native App」のクラス図</h3>
-                <p>「Native App」は、次のようなクラスからできています。</p>
-                <img src = "./ClassImage.png" width="1020">
-                <p>私は、赤枠内の6つのクラス(GameLoop)を開発しました。</p>
+            <h3>「Native App」の構成要素</h3>
+                <p>私は、主に「Native App」のシステムの開発を行いました。このシステムは、次のクラスからできています。</p>
+                <img src = "./ClassImage1.png" width="1020">
+                <p>私は、赤枠内の6つのクラスを開発しました。</p>
                 <ol>
                     <li>GameLoop</li>
-                    <p>このクラスは、「待機、開始、演奏、結果」、この一連の体験を繰り返します。</p>
+                    <p>このクラスは、「待機、チュートリアル、本番、結果発表」の進行を管理します。</p>
                     <div class = "code-block">
 public class GameLoop : MonoBehaviour
 {
-    int gameState;
-
-    public int score;
-    public GameObject startScreen;
-    public GameObject playScreen;
-    public GameObject tutorialScreen;
-    public GakufuController gakufuController;
-    public ChangeController changeController;
-    public Judgement judgement;
-    [SerializeField] private ButtonController _buttonController;
-    bool buttonStatus;
-
-    public TextMeshProUGUI cardNameText;
-    public GameObject glassHarmonica;
-    Transform myTransform;
-
-    public Transform theWorld;
-    public GameObject theCamera;
-
     void Start()
     {
         // ButtonのActionZoneに触れている時
         _buttonController.ActionZoneEvent += args =>
         {
+            // Buttonを押し込んだ時
             if (args.InteractionT == InteractionType.Enter)
             {
-                //ボタンを押した時の処理
                 buttonStatus = true;
             }
         };
@@ -89,31 +69,18 @@ public class GameLoop : MonoBehaviour
         score = 0;
     }
 
-    // Update is called once per frame
     void Update()
     {
-        //待機状態 VR空間内のボタンを押したら演奏を始める
+        //待機状態 ボタンが押されるとチュートリアルを開始
         if (gameState == 1)
         {
-            Vector3 pos = myTransform.position;
-            if (OVRInput.Get(OVRInput.RawButton.B))
-                pos.y += 0.001f;
-            if (OVRInput.Get(OVRInput.RawButton.Y))
-                pos.y -= 0.001f;
-            myTransform.position = pos;
-
-            Vector2 stick1 = OVRInput.Get(OVRInput.RawAxis2D.RThumbstick);
-            Vector2 stick2 = OVRInput.Get(OVRInput.RawAxis2D.LThumbstick);
-            Vector3 wpos = theWorld.transform.position;
-            wpos += (gameObject.transform.right * stick1.x) / 300.0f;
-            wpos += (gameObject.transform.forward * stick1.y) / 300.0f;
-            theWorld.transform.position = wpos;
-            theWorld.transform.RotateAround( theCamera.transform.position, Vector3.up, stick2.x / 10.0f);
-            
+            // ボタンが押された時
             if ( buttonStatus )
             {
+                judgement.nowPlaying = true;
                 startScreen.SetActive(false);
                 tutorialScreen.SetActive(true);
+                Debug.Log("GameLoop :Tutorial画面");
                 gakufuController.fileName = "Tutorial.csv";
                 gakufuController.StartPlaying();
                 changeController.StartRotation();
@@ -121,33 +88,38 @@ public class GameLoop : MonoBehaviour
                 gameState = 2;
             }
         }
-        //演奏状態 チュートリアル用の曲が終了したら本番の曲へ進む
+        //チューとリアル状態 
         else if (gameState == 2)
         {
+            // チュートリアルが終わり次第本番へ移る
             if (!gakufuController.isPlaying )
             {
                 gakufuController.StopPlaying();
                 tutorialScreen.SetActive(false);
                 playScreen.SetActive(true);
+                Debug.Log("GameLoop : Play画面");
                 gakufuController.fileName = "Canon.csv";
                 gakufuController.StartPlaying();
                 score = 0;
                 gameState = 3;
             }
         }
-        //演奏状態 本番の曲が終了したら待機状態へ戻る
+        // 本番状態
         else if (gameState == 3)
         {
+            // 本番が終わり次第、結果発表をして待機状態へ
             if ( !gakufuController.isPlaying )
             {
                 playScreen.SetActive(false);
                 startScreen.SetActive(true);
+                Debug.Log("GameLoop : Start画面");
                 cardNameText.text = score.ToString();
                 gakufuController.StopPlaying();
                 changeController.StopRotation();
                 judgement.LetsJudge();
                 buttonStatus = false;
                 gameState = 1;
+                judgement.nowPlaying = false;
             }
         }
         else
@@ -157,38 +129,77 @@ public class GameLoop : MonoBehaviour
     }
 }
                     </div>
+                    <p>※長文のため、宣言等は省略しています。</p>
 
-                    <li>GakufuController</li>
-                    <p>
-                    このクラスは、主に楽譜の進行を管理します。また、次のつの機能を持ちます。
-                    1.楽譜ファイルを読み込み機能
-                    </p>
-                    <div class = "code-block">
-
-                    </div>
-    
                     <li>Judgement</li>
                     <p>このクラスは、GakufuControllerから送られた、弾いたタイミングを評価します。</p>
                     <div class = "code-block">
+public class Judgement : MonoBehaviour
+{
+    void Start()
+    {
+        handClap = GetComponent<AudioSource>();
+    }
 
+    // 全体を通してタイミングよく弾けたかを評価
+    public void LetsJudge()
+    {
+        Debug.Log(gameLoop.score);
+        if (gameLoop.score > 4)
+        {
+            handClap.clip = manyClap;
+            handClap.Play();
+        }
+        else if (gameLoop.score > 0)
+        {
+            handClap.clip = aloneClap;
+            handClap.Play();
+        }
+    }
+
+    public void TimeJudge(List<float> times)
+    {
+        float mintime = 0f;
+        foreach (float time in times)
+        {
+            if (time < mintime)
+                mintime = time;
+        }
+        ScoreJudge(mintime);
+    }
+
+    public void ScoreJudge(float time)
+    {
+        if (time <= 1.0f)
+        {
+            gameLoop.score += 2;
+        }
+        else if (time <= 2.0f)
+        {
+            gameLoop.score += 1;
+        }
+        else
+        {
+            gameLoop.score -= 1;
+        }
+    }
+}
                     </div>
+                    <p>※長文のため、宣言等は省略しています。</p>
     
                     <li>TouchJudge</li>
                     <p>このクラスは、触れた鍵盤をGakufuContorllerに送ります。</p>
                     <div class = "code-block">
+public class TouchJudge : MonoBehaviour
+{
+    public int disk;
+    public GakufuController gakufucontroller;
 
-                    </div>
-    
-                    <li>Guider</li>
-                    <p>このクラスは、GakufuContorllerから送られた1音を表示します。</p>
-                    <div class = "code-block">
-
-                    </div>
-    
-                    <li>ChangeController</li>
-                    <p>このクラスは、GakufuContorllerから送られた鍵盤を光らせます。</p>
-                    <div class = "code-block">
-
+    void OnTriggerEnter(Collider other)
+    {
+        gakufucontroller.GetTime(disk);
+    }
+}
                     </div>
                 </ol>
         </section>
@@ -201,51 +212,291 @@ public class GameLoop : MonoBehaviour
                 <div class="system-text">
                     <h3>システムの特徴</h3>
                     <ul>
-                        <li>触れるべき場所を視覚的にハイライト表示</li>
-                        <li>正しい触れ方をリアルタイムにフィードバック</li>
-                        <li>熟練度に応じたガイダンスレベルの調整</li>
-                        <li>演奏の記録と分析機能</li>
+                        <li>触れるべき鍵盤を視覚的にハイライト表示</li>
+                        <li>触れるべきタイミングを直感的に表現</li>
+                        <li>楽譜をCVSファイルで読み込む</li>
                     </ul>
                     
-                    <h3>技術的実装</h3>
-                    <p>Unity上でC#を使用して開発されたこのシステムは、以下の要素で構成されています。</p>
-                </div>
-            </div>
-            
-            <div class="code-block">
-// C#によるグラスハーモニカ演奏ガイドの一部実装例
-using UnityEngine;
-using System.Collections;
+                    <h3>動作画面</h3>
+                    <img src = "./GuidImage.png">
 
-public class GlassHarmonicaGuide : MonoBehaviour
+                    <h3>構成要素</h3>
+                    <p>このシステムは、以下の要素で構成されています。</p>
+
+                    <li>GakufuController</li>
+                    <p>このクラスは、主に楽譜の進行を管理します。</p>
+                    <div class = "code-block">
+public class GakufuController : MonoBehaviour
 {
+    void Start()
+    {
+        notes = new List<Note>();
+        isPlaying = false;
+        fileName = "Tutorial.csv";
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (isPlaying)
+        // isPlaying が true であるなら：
+        {
+            time += Time.deltaTime;
+            if (notes[0].start < time)//注目している音符の開始時刻を過ぎたら
+            {
+                changeController.ChangeColor(notes[0].note, notes[0].duration);
+                notes.RemoveAt(0);
+            }
+            if (notes.Count == 0)
+            {
+                isPlaying = false;
+            }
+        }
+    }
+
+    public void GetTime(int disk)
+    {
+        List<float> times = new List<float>();
+        for (int i = 0; i < notes.Count; i++)
+        {
+            if (notes[i].note == disk)
+            {
+                if (notes[i].start > time)
+                {
+                    times.Add(notes[0].start - time);
+                }
+                else
+                {
+                    times.Add(time - notes[0].start);
+                }
+            }
+        }
+        judgement.TimeJudge(times);
+    }
+
+    void ReadFromFile(string filename)
+    {
+        // CSV 形式のファイルから読み込み
+        StreamReader sr = new StreamReader(Application.persistentDataPath + @"/" + @filename);
+        int i = 0;
+        while (!sr.EndOfStream)
+        {
+            string line = sr.ReadLine();
+            if (i == 0)
+            {
+                //1行目取得
+                string[] cols = line.Split(',');
+                i += 1;
+                continue;
+            }
+            else
+            {
+                //カンマで分ける
+                string[] values = line.Split(',');
+
+                //それぞれ型変換
+                int noteNumber = int.Parse(values[0]);
+                float startTime = float.Parse(values[1]);
+                float durationTime = float.Parse(values[2]);
+                bool playCheck = false;
+
+                // notesに格納する
+                notes.Add( new Note(noteNumber, startTime, durationTime, playCheck));
+            }
+        }
+    }
+
+    public void StartPlaying()
+    {
+        time = -3.5f;
+        isPlaying = true;
+        ReadFromFile(fileName);
+    }
+
+    public void StopPlaying()
+    {
+        time = 0;
+        notes.Clear();
+        isPlaying = false;
+    }
+
+    public List<Note> GetNewNotes()
+    {
+        List<Note> result = new List<Note>();
+        for (int i=0; i < notes.Count; i++)
+        {
+            Note n = notes[i];
+            if (!n.play && n.start < time+3.5f)
+            {
+                result.Add(n);
+                notes[i].play = true;
+            }
+        }
+        return result;
+    }
 }
+                    </div>
+                    <p>※長文のため、宣言等は省略しています。</p>
+   
+                    <li>Guider</li>
+                    <p>このクラスは、GakufuContorllerから送られた1音をガイドします。</p>
+                    <div class = "code-block">
+public class Guider : MonoBehaviour
+{
+    void Start()
+    {
+        Instantiate(obj1, new Vector3(-0.14f, 1.2f, 2.2f), Quaternion.identity);
+        sponeupposy = 0.3f;
+        kenbans = 24;
+        Vector3 v = startpos.transform.position;
+        kenban = new List<Vector3>();
+        for (int i=0; i < kenbans; i++)
+        {
+            kenban.Add(new Vector3(v.x - i*0.03f, v.y, v.z));
+        }
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        List<Note> ns = gakufuController.GetNewNotes();
+        if (ns.Count == 1)
+            cardNameText.text = ns.ToString();
+        foreach(Note n in ns)
+        {
+            Onpu(n.note);
+        }
+    }
+
+    void Onpu(int disk)
+    {
+        if (-1 < disk && disk < 24)
+        {
+            Vector3 kenbanpos = kenban[disk];
+            kenbanpos.y += sponeupposy;
+            Instantiate(obj1, new Vector3(kenbanpos.x, kenbanpos.y, kenbanpos.z), Quaternion.identity);
+            Debug.Log(disk + "MakeOnpu");
+
+        }
+        else
+        {
+            Debug.Log(disk + "Unknow");
+        }
+    }
+}
+                    </div>
+    
+                    <li>ChangeController</li>
+                    <p>このクラスは、GakufuContorllerから送られた鍵盤を光らせます。</p>
+                    <div class = "code-block">
+public class ChangeController : MonoBehaviour
+{
+    int DISK_COUNT = 24;
+
+    public bool[] isPlaying;
+    bool isRotating;
+
+    public GameObject[] kenban;
+    public GameObject armonicaBody;
+
+    Vector3 rotationVelocity = Vector3.right * 3.0f;
+    public float rotationAcceleration = 0.2f;
+
+    public Material[] _material;           
+    // 割り当てるマテリアル.
+
+    void Start()
+    {
+        isPlaying = new bool[DISK_COUNT];
+        isRotating = false;
+        for(int i=0; i < DISK_COUNT; i++)
+            isPlaying[i] = false;
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Rigidbody rb = armonicaBody.GetComponent<Rigidbody>();
+        Vector3 currentRotationVelocity = rb.angularVelocity;
+        if(isRotating)
+        {
+            rb.AddTorque( (rotationVelocity-currentRotationVelocity) * rotationAcceleration );
+        }
+        else
+        {
+            rb.AddTorque( (-currentRotationVelocity) * rotationAcceleration * 2 );
+        }
+
+    }
+
+    public void ChangeColor(int disk, float duration)
+    {
+        kenban[disk].GetComponent<Renderer>().material = _material[1];
+        StartCoroutine(ResetColor(disk, duration));
+        isPlaying[disk] = true;
+    }
+
+    IEnumerator ResetColor(int disk, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        kenban[disk].GetComponent<Renderer>().material = _material[0];
+        isPlaying[disk] = false;
+    }
+
+    public void StartRotation()
+    {
+        isRotating = true;
+    }
+    public void StopRotation()
+    {
+        isRotating = false;
+    }
+}
+                    </div>
+
+                    <li>OnpuController</li>
+                    <p>このクラスは、GakufuContorllerから送られた鍵盤を光らせます。</p>
+                    <div class = "code-block">
+public class OnpuScript : MonoBehaviour
+{
+    public float velocity;
+    Rigidbody rb;
+
+    void Start()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.velocity = new Vector3(0, -velocity, 0);
+    }
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.tag == "OnpuDeleteBox")
+        {
+            Destroy(this.gameObject);
+        }
+    }
+}
+                    </div>
+                </div>
             </div>
         </section>
         
         <section class="section">
             <h2>5. 成果と評価</h2>
             <p>2024年、「Laval Virtual」世界大会でベスト11に選出されるなど、高い評価を得ています。実物に触れられない希少楽器の音や演奏体験を多くの人に提供することに成功しました。</p>
-            
-            <div class="highlight">
-                <p>文化遺産のデジタル継承や音楽教育の新たな可能性を提示しています。</p>
-            </div>
         </section>
         
         <section class="section">
-            <h2>6. 今後の展望</h2>
-            <p>私たちのプロジェクトは、さらなる発展を目指しています：</p>
-            
-            <div class="highlight">
-                <p>他の「失われた楽器」への応用や、教育・博物館分野への展開を計画中です。</p>
-            </div>
-            
-            <p>テクノロジーとアートの融合による新しい価値創造を継続的に追求していきます。また、オープンソースとしてのプロジェクト公開も検討中で、より多くの人々が歴史的楽器との出会いを体験できる機会を創出していきます。</p>
+            <h2>6. やり残したこと</h2>
+            <ol>
+                <li>デバイスとVR空間上の楽器の位置合わせ</li>
+                <li>演奏開始までの演出</li>
+                <li>会場のクオリティ</li>
+            </ol>
         </section>
-        
+
         <section class="section">
             <h2>7. まとめ</h2>
-            <p>多摩大学の「失われた楽器」プロジェクトは、歴史的文化財のデジタル復元と体験を通じて、音楽とテクノロジーの未来を切り拓く取り組みです。</p>
+            <p>多摩大学の「失われた楽器」プロジェクトは、歴史的文化財のデジタル復元と体験を通じて、失われるものを未来へ引き継ぐ取り組みです。</p>
             <p>演奏ガイドシステムの開発により、専門知識がなくても誰でも失われつつある楽器文化を体験できる可能性を広げています。これからも技術革新と文化保存の両面から、新たな価値の創造に挑戦していきます。</p>
         </section>
     </div>
