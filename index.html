@@ -46,7 +46,7 @@
 
             <h3>「Native App」のクラス図</h3>
                 <p>「Native App」は、次のようなクラスからできています。</p>
-                <img src = "./ClassImage.png">
+                <img src = "./ClassImage.png" width="1020">
                 <p>私は、赤枠内の6つのクラス(GameLoop)を開発しました。</p>
                 <ol>
                     <li>GameLoop</li>
@@ -54,11 +54,108 @@
                     <div class = "code-block">
 public class GameLoop : MonoBehaviour
 {
-    Update()
-    {
+    int gameState;
 
+    public int score;
+    public GameObject startScreen;
+    public GameObject playScreen;
+    public GameObject tutorialScreen;
+    public GakufuController gakufuController;
+    public ChangeController changeController;
+    public Judgement judgement;
+    [SerializeField] private ButtonController _buttonController;
+    bool buttonStatus;
+
+    public TextMeshProUGUI cardNameText;
+    public GameObject glassHarmonica;
+    Transform myTransform;
+
+    public Transform theWorld;
+    public GameObject theCamera;
+
+    void Start()
+    {
+        // ButtonのActionZoneに触れている時
+        _buttonController.ActionZoneEvent += args =>
+        {
+            if (args.InteractionT == InteractionType.Enter)
+            {
+                //ボタンを押した時の処理
+                buttonStatus = true;
+            }
+        };
+        myTransform = glassHarmonica.transform;
+        gameState = 1;
+        score = 0;
     }
-}                        
+
+    // Update is called once per frame
+    void Update()
+    {
+        //待機状態 VR空間内のボタンを押したら演奏を始める
+        if (gameState == 1)
+        {
+            Vector3 pos = myTransform.position;
+            if (OVRInput.Get(OVRInput.RawButton.B))
+                pos.y += 0.001f;
+            if (OVRInput.Get(OVRInput.RawButton.Y))
+                pos.y -= 0.001f;
+            myTransform.position = pos;
+
+            Vector2 stick1 = OVRInput.Get(OVRInput.RawAxis2D.RThumbstick);
+            Vector2 stick2 = OVRInput.Get(OVRInput.RawAxis2D.LThumbstick);
+            Vector3 wpos = theWorld.transform.position;
+            wpos += (gameObject.transform.right * stick1.x) / 300.0f;
+            wpos += (gameObject.transform.forward * stick1.y) / 300.0f;
+            theWorld.transform.position = wpos;
+            theWorld.transform.RotateAround( theCamera.transform.position, Vector3.up, stick2.x / 10.0f);
+            
+            if ( buttonStatus )
+            {
+                startScreen.SetActive(false);
+                tutorialScreen.SetActive(true);
+                gakufuController.fileName = "Tutorial.csv";
+                gakufuController.StartPlaying();
+                changeController.StartRotation();
+                buttonStatus = false;
+                gameState = 2;
+            }
+        }
+        //演奏状態 チュートリアル用の曲が終了したら本番の曲へ進む
+        else if (gameState == 2)
+        {
+            if (!gakufuController.isPlaying )
+            {
+                gakufuController.StopPlaying();
+                tutorialScreen.SetActive(false);
+                playScreen.SetActive(true);
+                gakufuController.fileName = "Canon.csv";
+                gakufuController.StartPlaying();
+                score = 0;
+                gameState = 3;
+            }
+        }
+        //演奏状態 本番の曲が終了したら待機状態へ戻る
+        else if (gameState == 3)
+        {
+            if ( !gakufuController.isPlaying )
+            {
+                playScreen.SetActive(false);
+                startScreen.SetActive(true);
+                cardNameText.text = score.ToString();
+                gakufuController.StopPlaying();
+                changeController.StopRotation();
+                judgement.LetsJudge();
+                buttonStatus = false;
+                gameState = 1;
+            }
+        }
+        else
+        {
+            Debug.Log("現在の状態："+ gameState);
+        }
+    }
+}
                     </div>
 
                     <li>GakufuController</li>
